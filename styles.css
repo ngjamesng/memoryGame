@@ -1,1 +1,19 @@
+/* board styles */
+ul#cards {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+}
+li {
+	list-style-type: none;
+	margin: 10px;
+	background: gray;
+	border: 1px solid black;
+}
 
+/* card styles */
+.image img {
+	width: 100px;
+	height: 100px;
+	object-fit: contain;
+}
