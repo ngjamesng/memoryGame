@@ -7,7 +7,7 @@ ul#cards {
 li {
 	list-style-type: none;
 	margin: 10px;
-	background: gray;
+	background: white;
 	border: 1px solid black;
 }
 
