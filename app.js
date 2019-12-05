@@ -44,9 +44,7 @@ document.addEventListener("DOMContentLoaded", () => {
 		startButton.textContent = "reset";
 		const cardNodeList = document.querySelectorAll(".image.facedown"); //Array/nodelist
 		let guessObj = {}; //object
-		let matchedCards = {};
-		generateCards(cardNodeList, guessObj, matchedCards);
-		listenForFlipCards(cardNodeList, guessObj, matchedCards, gameStateActive);
+		listenForFlipCards(cardNodeList, guessObj, gameStateActive);
 	}
 
 	// start button section
@@ -58,13 +56,8 @@ document.addEventListener("DOMContentLoaded", () => {
 	}
 
 	// start game logic section
-	function generateCards(cardNodeList, guessObj, matchedCards) {
-		for (let i = 0; i < cardNodeList.length; i++) {
-			matchedCards[cardNodeList[i].innerHTML] = false;
-		}
-	}
 
-	function listenForFlipCards(cardNodeList, guessObj, matchedCards, gameStateActive) {
+	function listenForFlipCards(cardNodeList, guessObj, gameStateActive) {
 		cardNodeList.forEach((card, idx, arr) => {
 			card.addEventListener("click", () => {
 				// if all cards class list has matched, handle win
@@ -73,7 +66,7 @@ document.addEventListener("DOMContentLoaded", () => {
 				if (
 					gameStateActive &&
 					card.classList.contains("facedown") &&
-					!matchedCards[card.innerHTML] &&
+					!card.classList.contains("matched") &&
 					Object.keys(guessObj).length == 0
 				) {
 					//if first, flip over
@@ -83,20 +76,14 @@ document.addEventListener("DOMContentLoaded", () => {
 				} else if (
 					gameStateActive &&
 					card.classList.contains("facedown") &&
+					!card.classList.contains("matched") &&
 					!guessObj[idx] &&
-					matchedCards[card.innerHTML] == false &&
 					guessObj[Object.keys(guessObj)[0]].innerHTML === card.innerHTML
 				) {
 					// if card contains facedown && idx is not already in guess obj && card.innerHTML is identical... MATCH!!!
 					//  then apply matched class, remove facedown class, remove event listener, increment score, clear guess, make match = true
-					// console.log("found a match!");
 					cardNodeList.forEach((card) => {
-						if (
-							card.classList.contains("facedown") &&
-							!matchedCards[card.innerHTML] &&
-							!guessObj[idx] &&
-							guessObj[Object.keys(guessObj)[0]].innerHTML == card.innerHTML
-						) {
+						if (!guessObj[idx] && guessObj[Object.keys(guessObj)[0]].innerHTML == card.innerHTML) {
 							card.classList.add("matched");
 							card.classList.remove("facedown");
 							card.classList.remove("selected");
@@ -106,24 +93,12 @@ document.addEventListener("DOMContentLoaded", () => {
 					clearGuess(guessObj);
 				} else if (card.classList.contains("facedown") && !card.classList.contains("matched")) {
 					// if two different cards
-					gameStateActive &&
-						cardNodeList.forEach((card) => {
-							card.classList.remove("selected");
-						});
+					gameStateActive && cardNodeList.forEach((card) => card.classList.remove("selected"));
 					clearGuess(guessObj);
 					incrementScoreBoard();
 					console.log("two different cards");
 				}
-				// if (
-				// 	gameStateActive &&
-				// 	Array.prototype.slice.call(cardNodeList).every((card) => {
-				// 		return Object.values(card.classList).includes("matched");
-				// 	})
-				// ) {
-				// 	handleWin(gameStateActive);
-				// }
 				checkWin(cardNodeList);
-				// if card contains facedown && idx
 			});
 		});
 	}
@@ -134,16 +109,14 @@ document.addEventListener("DOMContentLoaded", () => {
 		}
 	}
 
-	function removeClass(cardNodeList, correctGuess) {}
-
-	function flipCards() {}
-
 	function incrementScoreBoard() {
 		score++;
 		currentScoreDisplay.textContent = score;
 	}
 
 	// handling the win
+
+	function checkIfFacedownAndNotMatched() {}
 
 	function checkWin(cardNodeList) {
 		if (
@@ -161,7 +134,7 @@ document.addEventListener("DOMContentLoaded", () => {
 		gameStateActive = false;
 		startButton.textContent = "play again!";
 		console.log(bestScoreDisplay.textContent);
-		if (bestScoreDisplay.textContent == "-" || +bestScoreDisplay.textContent < score) {
+		if (bestScoreDisplay.textContent == "-" || +bestScoreDisplay.textContent > score) {
 			bestScoreDisplay.textContent = score;
 		}
 	}
