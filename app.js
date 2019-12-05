@@ -1,8 +1,9 @@
 document.addEventListener("DOMContentLoaded", () => {
 	// best score, current score section
-	const bestScore = document.querySelector("#best-score"),
+	const bestScoreDisplay = document.querySelector("#best-score"),
 		currentScoreDisplay = document.querySelector("#current-score");
 	let score = 0;
+	let gameStateActive = false;
 
 	// board/cards section
 	const cards = document.querySelector("#cards");
@@ -13,7 +14,7 @@ document.addEventListener("DOMContentLoaded", () => {
 		setGameBoard();
 		startGameLogic();
 	});
-	// finish game, will need to call reset, and if current score < best score, then bestscore=Score Dispaly
+	// finish game, will need to call reset, and if current score < best score, then bestScoreDisplay=Score Dispaly
 
 	function setGameBoard() {
 		// NEED TO ADD RANDOMIZE FUNCTION
@@ -38,45 +39,49 @@ document.addEventListener("DOMContentLoaded", () => {
 	}
 
 	// game logic
-	let gameActive = false;
 	function startGameLogic() {
-		gameActive = true;
-		const cardArray = document.querySelectorAll(".image.facedown"); //Array/nodelist
+		gameStateActive = true;
+		startButton.textContent = "reset";
+		const cardNodeList = document.querySelectorAll(".image.facedown"); //Array/nodelist
 		let guessObj = {}; //object
 		let matchedCards = {};
-		generateCards(cardArray, guessObj, matchedCards);
-		listenForFlipCards(cardArray, guessObj, matchedCards);
+		generateCards(cardNodeList, guessObj, matchedCards);
+		listenForFlipCards(cardNodeList, guessObj, matchedCards, gameStateActive);
 	}
 
 	// start button section
 
 	function clearGameBoard() {
 		cards.innerHTML = "";
+		score = 0;
+		currentScoreDisplay.textContent = score;
 	}
 
 	// start game logic section
-	function generateCards(cardArray, guessObj, matchedCards) {
-		for (let i = 0; i < cardArray.length; i++) {
-			matchedCards[cardArray[i].innerHTML] = false;
+	function generateCards(cardNodeList, guessObj, matchedCards) {
+		for (let i = 0; i < cardNodeList.length; i++) {
+			matchedCards[cardNodeList[i].innerHTML] = false;
 		}
 	}
 
-	function listenForFlipCards(cardArray, guessObj, matchedCards) {
-		cardArray.forEach((card, idx, arr) => {
+	function listenForFlipCards(cardNodeList, guessObj, matchedCards, gameStateActive) {
+		cardNodeList.forEach((card, idx, arr) => {
 			card.addEventListener("click", () => {
+				// if all cards class list has matched, handle win
+				console.log(Object.values(card.classList));
 				console.log(`${card.innerHTML} at idx ${idx}`);
 				if (
+					gameStateActive &&
 					card.classList.contains("facedown") &&
 					!matchedCards[card.innerHTML] &&
 					Object.keys(guessObj).length == 0
 				) {
 					//if first, flip over
-					guessObj[idx] = cardArray[idx];
+					guessObj[idx] = cardNodeList[idx];
 					card.classList.add("selected");
 					incrementScoreBoard();
-					// console.log("flipped one card, contains facedown, not matched");
-					// console.log(guessObj);
 				} else if (
+					gameStateActive &&
 					card.classList.contains("facedown") &&
 					!guessObj[idx] &&
 					matchedCards[card.innerHTML] == false &&
@@ -84,31 +89,40 @@ document.addEventListener("DOMContentLoaded", () => {
 				) {
 					// if card contains facedown && idx is not already in guess obj && card.innerHTML is identical... MATCH!!!
 					//  then apply matched class, remove facedown class, remove event listener, increment score, clear guess, make match = true
-					console.log("found a match!");
-					cardArray.forEach((card) => {
+					// console.log("found a match!");
+					cardNodeList.forEach((card) => {
 						if (
 							card.classList.contains("facedown") &&
 							!matchedCards[card.innerHTML] &&
 							!guessObj[idx] &&
 							guessObj[Object.keys(guessObj)[0]].innerHTML == card.innerHTML
 						) {
+							card.classList.add("matched");
 							card.classList.remove("facedown");
 							card.classList.remove("selected");
-							card.classList.add("matched");
 						}
 					});
 					incrementScoreBoard();
 					clearGuess(guessObj);
 				} else if (card.classList.contains("facedown") && !card.classList.contains("matched")) {
 					// if two different cards
-					cardArray.forEach((card) => {
-						card.classList.remove("selected");
-					});
+					gameStateActive &&
+						cardNodeList.forEach((card) => {
+							card.classList.remove("selected");
+						});
 					clearGuess(guessObj);
 					incrementScoreBoard();
 					console.log("two different cards");
 				}
-
+				// if (
+				// 	gameStateActive &&
+				// 	Array.prototype.slice.call(cardNodeList).every((card) => {
+				// 		return Object.values(card.classList).includes("matched");
+				// 	})
+				// ) {
+				// 	handleWin(gameStateActive);
+				// }
+				checkWin(cardNodeList);
 				// if card contains facedown && idx
 			});
 		});
@@ -120,12 +134,35 @@ document.addEventListener("DOMContentLoaded", () => {
 		}
 	}
 
-	function removeClass(cardArray, correctGuess) {}
+	function removeClass(cardNodeList, correctGuess) {}
 
 	function flipCards() {}
 
 	function incrementScoreBoard() {
 		score++;
 		currentScoreDisplay.textContent = score;
+	}
+
+	// handling the win
+
+	function checkWin(cardNodeList) {
+		if (
+			gameStateActive &&
+			Array.prototype.slice.call(cardNodeList).every((card) => {
+				return Object.values(card.classList).includes("matched");
+			})
+		) {
+			handleWin(gameStateActive);
+		}
+	}
+
+	function handleWin(gameStateActive) {
+		console.log("you win!!!");
+		gameStateActive = false;
+		startButton.textContent = "play again!";
+		console.log(bestScoreDisplay.textContent);
+		if (bestScoreDisplay.textContent == "-" || +bestScoreDisplay.textContent < score) {
+			bestScoreDisplay.textContent = score;
+		}
 	}
 });
