@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
 	// finish game, will need to call reset, and if current score < best score, then bestScoreDisplay=Score Dispaly
 
 	function setGameBoard() {
-		// NEED TO ADD RANDOMIZE FUNCTION
+		// NEED TO ADD RANDOMIZE FUNCTION TWICE
 		let doubledCards = [
 			0,
 			1,
@@ -61,11 +61,13 @@ document.addEventListener("DOMContentLoaded", () => {
 		cardNodeList.forEach((card, idx) => {
 			card.addEventListener("click", () => {
 				// if all cards class list has matched, handle win
-				let cardImg = card.innerHTML;
-				if (firstCard(gameStateActive, card, guessObj)) {
+				// if selected card is the same or already matched, don't increment score
+				if (sameOrMatched(gameStateActive, card)) {
+					null;
+				} else if (firstCard(gameStateActive, card, guessObj)) {
 					flipFaceUp(guessObj, idx, cardNodeList, card);
 					incrementScoreBoard();
-				} else if (checkIfTwoCardsMatch(gameStateActive, card, guessObj, idx, cardImg)) {
+				} else if (checkIfTwoCardsMatch(gameStateActive, card, guessObj, idx)) {
 					matchCards(cardNodeList, guessObj, idx);
 					clearGuess(guessObj);
 					incrementScoreBoard();
@@ -73,9 +75,6 @@ document.addEventListener("DOMContentLoaded", () => {
 					cardNodeList.forEach((card) => card.classList.remove("selected"));
 					clearGuess(guessObj);
 					incrementScoreBoard();
-					// console.log("two different cards");
-				} else {
-					console.log("you clicked on the same card twice");
 				}
 				checkWin(cardNodeList); //check win at every iteration
 			});
@@ -94,6 +93,10 @@ document.addEventListener("DOMContentLoaded", () => {
 	}
 
 	// matching logic
+	function sameOrMatched(gameStateActive, card) {
+		return gameStateActive && Object.values(card.classList).includes("selected" || "matched");
+	}
+
 	function firstCard(gameStateActive, card, guessObj) {
 		return gameStateActive && facedownAndNotMatched(card) && Object.keys(guessObj).length == 0;
 	}
@@ -103,12 +106,12 @@ document.addEventListener("DOMContentLoaded", () => {
 		card.classList.add("selected");
 	}
 
-	function checkIfTwoCardsMatch(gameStateActive, card, guessObj, idx, cardImg) {
+	function checkIfTwoCardsMatch(gameStateActive, card, guessObj, idx) {
 		return (
 			gameStateActive &&
 			facedownAndNotMatched(card) &&
 			!guessObj[idx] &&
-			guessObj[Object.keys(guessObj)[0]].innerHTML === cardImg
+			guessObj[Object.keys(guessObj)[0]].innerHTML === card.innerHTML
 		);
 	}
 
