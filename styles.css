@@ -19,11 +19,16 @@ li {
 }
 
 li.facedown {
-	background-color: red;
+	background-color: black;
 }
 
-li.selected {
+li.facedown img {
+	opacity: 0;
+}
+
+li.facedown.selected img {
 	background-color: yellow;
+	opacity: 1;
 }
 
 li.matched {
