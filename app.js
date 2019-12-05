@@ -133,14 +133,10 @@ document.addEventListener("DOMContentLoaded", () => {
 	}
 
 	function checkWin(cardNodeList) {
-		if (
-			gameStateActive &&
-			Array.prototype.slice.call(cardNodeList).every((card) => {
-				return Object.values(card.classList).includes("matched");
-			})
-		) {
-			handleWin();
-		}
+		gameStateActive &&
+		Array.prototype.slice.call(cardNodeList).every((card) => Object.values(card.classList).includes("matched"))
+			? handleWin()
+			: null;
 	}
 
 	function handleWin() {
