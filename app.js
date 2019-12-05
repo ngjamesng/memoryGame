@@ -58,47 +58,26 @@ document.addEventListener("DOMContentLoaded", () => {
 	// start game logic section
 
 	function listenForFlipCards(cardNodeList, guessObj, gameStateActive) {
-		cardNodeList.forEach((card, idx, arr) => {
+		cardNodeList.forEach((card, idx) => {
 			card.addEventListener("click", () => {
 				// if all cards class list has matched, handle win
-				console.log(Object.values(card.classList));
-				console.log(`${card.innerHTML} at idx ${idx}`);
-				if (
-					gameStateActive &&
-					card.classList.contains("facedown") &&
-					!card.classList.contains("matched") &&
-					Object.keys(guessObj).length == 0
-				) {
-					//if first, flip over
-					guessObj[idx] = cardNodeList[idx];
-					card.classList.add("selected");
+				let cardImg = card.innerHTML;
+				if (firstCard(gameStateActive, card, guessObj)) {
+					flipFaceUp(guessObj, idx, cardNodeList, card);
 					incrementScoreBoard();
-				} else if (
-					gameStateActive &&
-					card.classList.contains("facedown") &&
-					!card.classList.contains("matched") &&
-					!guessObj[idx] &&
-					guessObj[Object.keys(guessObj)[0]].innerHTML === card.innerHTML
-				) {
-					// if card contains facedown && idx is not already in guess obj && card.innerHTML is identical... MATCH!!!
-					//  then apply matched class, remove facedown class, remove event listener, increment score, clear guess, make match = true
-					cardNodeList.forEach((card) => {
-						if (!guessObj[idx] && guessObj[Object.keys(guessObj)[0]].innerHTML == card.innerHTML) {
-							card.classList.add("matched");
-							card.classList.remove("facedown");
-							card.classList.remove("selected");
-						}
-					});
-					incrementScoreBoard();
-					clearGuess(guessObj);
-				} else if (card.classList.contains("facedown") && !card.classList.contains("matched")) {
-					// if two different cards
-					gameStateActive && cardNodeList.forEach((card) => card.classList.remove("selected"));
+				} else if (checkIfTwoCardsMatch(gameStateActive, card, guessObj, idx, cardImg)) {
+					matchCards(cardNodeList, guessObj, idx);
 					clearGuess(guessObj);
 					incrementScoreBoard();
-					console.log("two different cards");
+				} else if (checkIfTwoAreDifferent(card)) {
+					cardNodeList.forEach((card) => card.classList.remove("selected"));
+					clearGuess(guessObj);
+					incrementScoreBoard();
+					// console.log("two different cards");
+				} else {
+					console.log("you clicked on the same card twice");
 				}
-				checkWin(cardNodeList);
+				checkWin(cardNodeList); //check win at every iteration
 			});
 		});
 	}
@@ -114,9 +93,44 @@ document.addEventListener("DOMContentLoaded", () => {
 		currentScoreDisplay.textContent = score;
 	}
 
+	// matching logic
+	function firstCard(gameStateActive, card, guessObj) {
+		return gameStateActive && facedownAndNotMatched(card) && Object.keys(guessObj).length == 0;
+	}
+
+	function flipFaceUp(guessObj, idx, cardNodeList, card) {
+		guessObj[idx] = cardNodeList[idx];
+		card.classList.add("selected");
+	}
+
+	function checkIfTwoCardsMatch(gameStateActive, card, guessObj, idx, cardImg) {
+		return (
+			gameStateActive &&
+			facedownAndNotMatched(card) &&
+			!guessObj[idx] &&
+			guessObj[Object.keys(guessObj)[0]].innerHTML === cardImg
+		);
+	}
+
+	function checkIfTwoAreDifferent(card) {
+		return facedownAndNotMatched(card);
+	}
+
+	function matchCards(cardNodeList, guessObj, idx) {
+		cardNodeList.forEach((cardNode) => {
+			if (!guessObj[idx] && guessObj[Object.keys(guessObj)[0]].innerHTML == cardNode.innerHTML) {
+				cardNode.classList.add("matched");
+				cardNode.classList.remove("facedown");
+				cardNode.classList.remove("selected");
+			}
+		});
+	}
+
 	// handling the win
 
-	function checkIfFacedownAndNotMatched() {}
+	function facedownAndNotMatched(card) {
+		return card.classList.contains("facedown") && !card.classList.contains("matched");
+	}
 
 	function checkWin(cardNodeList) {
 		if (
@@ -125,15 +139,14 @@ document.addEventListener("DOMContentLoaded", () => {
 				return Object.values(card.classList).includes("matched");
 			})
 		) {
-			handleWin(gameStateActive);
+			handleWin();
 		}
 	}
 
-	function handleWin(gameStateActive) {
+	function handleWin() {
 		console.log("you win!!!");
 		gameStateActive = false;
 		startButton.textContent = "play again!";
-		console.log(bestScoreDisplay.textContent);
 		if (bestScoreDisplay.textContent == "-" || +bestScoreDisplay.textContent > score) {
 			bestScoreDisplay.textContent = score;
 		}
