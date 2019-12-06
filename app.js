@@ -14,7 +14,6 @@ document.addEventListener("DOMContentLoaded", () => {
 		setGameBoard();
 		startGameLogic();
 	});
-	// finish game, will need to call reset, and if current score < best score, then bestScoreDisplay=Score Dispaly
 
 	function setGameBoard() {
 		// NEED TO ADD RANDOMIZE FUNCTION TWICE
@@ -32,6 +31,7 @@ document.addEventListener("DOMContentLoaded", () => {
 			imageItem.setAttribute("class", "image facedown");
 			let img = document.createElement("img");
 			img.setAttribute("src", `cards/${singleCard}.jpg`);
+			img.setAttribute("draggable", false); // prevent dragging/cheating
 			imageItem.appendChild(img);
 			// finally, add the card to the list of cards
 			cards.appendChild(imageItem);
@@ -42,8 +42,8 @@ document.addEventListener("DOMContentLoaded", () => {
 	function startGameLogic() {
 		gameStateActive = true;
 		startButton.textContent = "reset";
-		const cardNodeList = document.querySelectorAll(".image.facedown"); //Array/nodelist
-		let guessObj = {}; //object
+		const cardNodeList = document.querySelectorAll(".image.facedown"); //nodelist, not an array
+		let guessObj = {};
 		listenForFlipCards(cardNodeList, guessObj, gameStateActive);
 	}
 
@@ -60,9 +60,7 @@ document.addEventListener("DOMContentLoaded", () => {
 	function listenForFlipCards(cardNodeList, guessObj, gameStateActive) {
 		cardNodeList.forEach((card, idx) => {
 			card.addEventListener("click", () => {
-				console.log(guessObj);
-				console.log(card);
-				if (checkSameOrMatched(gameStateActive, card, guessObj)) {
+				if (checkSameOrMatchedOrAlreadyFlippedTwo(gameStateActive, card, guessObj)) {
 					null;
 				} else if (checkFirstCard(gameStateActive, card, guessObj, cardNodeList)) {
 					flipFaceUp(guessObj, idx, cardNodeList, card);
@@ -89,8 +87,11 @@ document.addEventListener("DOMContentLoaded", () => {
 	}
 
 	// matching logic
-	function checkSameOrMatched(gameStateActive, card, guessObj) {
-		return gameStateActive && Object.values(card.classList).includes("selected" || "matched");
+	function checkSameOrMatchedOrAlreadyFlippedTwo(gameStateActive, card, guessObj) {
+		return (
+			(gameStateActive && Object.values(card.classList).includes("selected" || "matched")) ||
+			Object.keys(guessObj).length == 2
+		);
 	}
 
 	function checkFirstCard(gameStateActive, card, guessObj, cardNodeList) {
@@ -117,7 +118,6 @@ document.addEventListener("DOMContentLoaded", () => {
 			gameStateActive &&
 			facedownAndNotMatched(card) &&
 			!guessObj[idx] &&
-			Object.keys(guessObj).length > 2 &&
 			guessObj[Object.keys(guessObj)[0]].innerHTML === card.innerHTML
 		);
 	}
@@ -164,8 +164,8 @@ document.addEventListener("DOMContentLoaded", () => {
 				}
 			});
 			clearGuess(guessObj);
-			incrementScoreBoard();
 		}, 3000);
+		incrementScoreBoard();
 	}
 
 	// handling the win
