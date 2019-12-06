@@ -60,22 +60,18 @@ document.addEventListener("DOMContentLoaded", () => {
 	function listenForFlipCards(cardNodeList, guessObj, gameStateActive) {
 		cardNodeList.forEach((card, idx) => {
 			card.addEventListener("click", () => {
-				// if all cards class list has matched, handle win
-				// if selected card is the same or already matched, don't increment score
-				if (sameOrMatched(gameStateActive, card)) {
+				console.log(guessObj);
+				console.log(card);
+				if (checkSameOrMatched(gameStateActive, card, guessObj)) {
 					null;
-				} else if (firstCard(gameStateActive, card, guessObj)) {
+				} else if (checkFirstCard(gameStateActive, card, guessObj, cardNodeList)) {
 					flipFaceUp(guessObj, idx, cardNodeList, card);
-					incrementScoreBoard();
 				} else if (checkIfTwoCardsMatch(gameStateActive, card, guessObj, idx)) {
 					matchCards(cardNodeList, guessObj, idx);
-					clearGuess(guessObj);
-					incrementScoreBoard();
-				} else if (checkIfTwoAreDifferent(card)) {
-					cardNodeList.forEach((card) => card.classList.remove("selected"));
-					clearGuess(guessObj);
-					incrementScoreBoard();
+				} else if (checkIfTwoAreDifferent(card, guessObj)) {
+					twoDifferentCards(guessObj, idx, cardNodeList, card);
 				}
+
 				checkWin(cardNodeList); //check win at every iteration
 			});
 		});
@@ -93,17 +89,27 @@ document.addEventListener("DOMContentLoaded", () => {
 	}
 
 	// matching logic
-	function sameOrMatched(gameStateActive, card) {
+	function checkSameOrMatched(gameStateActive, card, guessObj) {
 		return gameStateActive && Object.values(card.classList).includes("selected" || "matched");
 	}
 
-	function firstCard(gameStateActive, card, guessObj) {
-		return gameStateActive && facedownAndNotMatched(card) && Object.keys(guessObj).length == 0;
+	function checkFirstCard(gameStateActive, card, guessObj, cardNodeList) {
+		return (
+			gameStateActive &&
+			facedownAndNotMatched(card) &&
+			Object.keys(guessObj).length == 0 &&
+			!cardNodeList.forEach((cardNode) => {
+				cardNode.classList.contains("selected");
+			})
+		);
 	}
 
 	function flipFaceUp(guessObj, idx, cardNodeList, card) {
 		guessObj[idx] = cardNodeList[idx];
-		card.classList.add("selected");
+		if (Object.keys(guessObj).length == 1) {
+			card.classList.add("selected");
+		}
+		incrementScoreBoard();
 	}
 
 	function checkIfTwoCardsMatch(gameStateActive, card, guessObj, idx) {
@@ -111,22 +117,55 @@ document.addEventListener("DOMContentLoaded", () => {
 			gameStateActive &&
 			facedownAndNotMatched(card) &&
 			!guessObj[idx] &&
+			Object.keys(guessObj).length > 2 &&
 			guessObj[Object.keys(guessObj)[0]].innerHTML === card.innerHTML
 		);
 	}
 
-	function checkIfTwoAreDifferent(card) {
-		return facedownAndNotMatched(card);
-	}
-
 	function matchCards(cardNodeList, guessObj, idx) {
 		cardNodeList.forEach((cardNode) => {
-			if (!guessObj[idx] && guessObj[Object.keys(guessObj)[0]].innerHTML == cardNode.innerHTML) {
+			if (
+				!guessObj[idx] &&
+				guessObj[Object.keys(guessObj)[0]].innerHTML == cardNode.innerHTML &&
+				Object.keys(guessObj).length < 2
+			) {
 				cardNode.classList.add("matched");
 				cardNode.classList.remove("facedown");
 				cardNode.classList.remove("selected");
 			}
 		});
+		incrementScoreBoard();
+		clearGuess(guessObj);
+	}
+
+	function checkIfTwoAreDifferent(card, guessObj) {
+		return facedownAndNotMatched(card) && Object.keys(guessObj).length == 1;
+	}
+
+	function twoDifferentCards(guessObj, idx, cardNodeList, card) {
+		if (Object.keys(guessObj).length == 1) {
+			guessObj[idx] = cardNodeList[idx];
+		}
+		cardNodeList.forEach((node, nodeidx) => {
+			if (
+				Object.keys(guessObj).includes(nodeidx.toString()) &&
+				Object.keys(guessObj).length == 2
+				// card !== node
+			) {
+				node.classList.add("selected");
+			}
+		});
+
+		setTimeout(() => {
+			cardNodeList.forEach((node) => {
+				if (node.classList.contains("selected")) {
+					node.classList.remove("selected");
+					console.log("removed!");
+				}
+			});
+			clearGuess(guessObj);
+			incrementScoreBoard();
+		}, 3000);
 	}
 
 	// handling the win
