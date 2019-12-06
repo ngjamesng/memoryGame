@@ -164,7 +164,7 @@ document.addEventListener("DOMContentLoaded", () => {
 				}
 			});
 			clearGuess(guessObj);
-		}, 3000);
+		}, 1500);
 		incrementScoreBoard();
 	}
 
