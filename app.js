@@ -28,7 +28,7 @@ document.addEventListener("DOMContentLoaded", () => {
 		doubledCards.forEach((singleCard) => {
 			// create li (list item)
 			let imageItem = document.createElement("li");
-			imageItem.setAttribute("class", "image facedown");
+			imageItem.setAttribute("class", "card facedown");
 			let img = document.createElement("img");
 			img.setAttribute("src", `cards/${singleCard}.jpg`);
 			img.setAttribute("draggable", false); // prevent dragging/cheating
@@ -42,7 +42,7 @@ document.addEventListener("DOMContentLoaded", () => {
 	function startGameLogic() {
 		gameStateActive = true;
 		startButton.textContent = "reset";
-		const cardNodeList = document.querySelectorAll(".image.facedown"); //nodelist, not an array
+		const cardNodeList = document.querySelectorAll(".card.facedown"); //nodelist, not an array
 		let guessObj = {};
 		listenForFlipCards(cardNodeList, guessObj, gameStateActive);
 	}
