@@ -5,10 +5,18 @@ document.addEventListener("DOMContentLoaded", () => {
 	let score = 0;
 	let gameStateActive = false;
 
+	localStorage.bestScore ? (bestScoreDisplay.textContent = localStorage.bestScore) : null;
+
 	// board/cards section
 	const cards = document.querySelector("#cards");
 	const startButton = document.querySelector("#startButton");
+	const clearBestScore = document.querySelector("#clearBestScore");
 	// start game
+	clearBestScore.addEventListener("click", () => {
+		localStorage.clear();
+		bestScoreDisplay.textContent = "-";
+	});
+
 	startButton.addEventListener("click", () => {
 		clearGameBoard();
 		setGameBoard();
@@ -40,12 +48,12 @@ document.addEventListener("DOMContentLoaded", () => {
 			imageItem.setAttribute("class", "flipcard facedown");
 			let div = document.createElement("div");
 			let img = document.createElement("img");
+			let front = document.createElement("div");
 			img.setAttribute("class", "side back");
 			img.setAttribute("src", `cards/${singleCard}.jpg`);
 			img.setAttribute("draggable", false); // prevent dragging/cheating
-			div.appendChild(img);
-			let front = document.createElement("div");
 			front.setAttribute("class", "side front");
+			div.appendChild(img);
 			div.appendChild(front);
 			div.setAttribute("class", "card");
 			// finally, add the card to the list of cards
@@ -122,7 +130,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 	function flipFaceUp(guessObj, idx, cardNodeList, card) {
 		guessObj[idx] = cardNodeList[idx];
-		console.log(card.childNodes[0].classList);
 		if (Object.keys(guessObj).length == 1) {
 			card.classList.add("selected");
 		}
@@ -176,11 +183,10 @@ document.addEventListener("DOMContentLoaded", () => {
 			cardNodeList.forEach((node) => {
 				if (node.classList.contains("selected")) {
 					node.classList.remove("selected");
-					console.log("removed!");
 				}
 			});
 			clearGuess(guessObj);
-		}, 1500);
+		}, 1000);
 		incrementScoreBoard();
 	}
 
@@ -198,11 +204,11 @@ document.addEventListener("DOMContentLoaded", () => {
 	}
 
 	function handleWin() {
-		console.log("you win!!!");
 		gameStateActive = false;
 		startButton.textContent = "play again!";
 		if (bestScoreDisplay.textContent == "-" || +bestScoreDisplay.textContent > score) {
 			bestScoreDisplay.textContent = score;
+			localStorage.setItem("bestScore", bestScoreDisplay.textContent);
 		}
 	}
 });
