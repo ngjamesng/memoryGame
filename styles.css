@@ -1,3 +1,6 @@
+html {
+	scroll-behavior: smooth;
+}
 /* board styles */
 ul#cards {
 	display: flex;
