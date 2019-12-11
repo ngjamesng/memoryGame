@@ -17,14 +17,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
 	function setGameBoard() {
 		// NEED TO ADD RANDOMIZE FUNCTION TWICE
-		let doubledCards = [
-			0,
-			1,
-			2,
-			0,
-			1,
-			2
-		];
+		let doubledCards = [];
+		for (let i = 0; i < 6; i++) {
+			// need to do twice, each image is based on the URL numbered starting 0.jpg
+			doubledCards.push(i);
+			doubledCards.push(i);
+		}
+		doubledCards.forEach((singleCard, idx) => {
+			const j = Math.floor(Math.random() * (idx + 1));
+			[
+				doubledCards[idx],
+				doubledCards[j]
+			] = [
+				doubledCards[j],
+				doubledCards[idx]
+			];
+		});
+
 		doubledCards.forEach((singleCard) => {
 			// create li (list item)
 			let imageItem = document.createElement("li");
@@ -76,7 +85,6 @@ document.addEventListener("DOMContentLoaded", () => {
 				} else if (checkIfTwoAreDifferent(card, guessObj)) {
 					twoDifferentCards(guessObj, idx, cardNodeList, card);
 				}
-
 				checkWin(cardNodeList); //check win at every iteration
 			});
 		});
