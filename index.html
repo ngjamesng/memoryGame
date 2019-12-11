@@ -21,9 +21,24 @@
     </section>
     <section id="board">
         <ul id="cards">
-                <li class="card facedown">
-                    <img src="cards/0.jpg" draggable="false">
+                <li class="flipcard facedown">
+                    <div class="card">
+                        <img class="side back" src="cards/0.jpg" draggable="false">
+                        <div class="side front"></div>
+                    </div>
                 </li>
+                <li class="flipcard selected">
+                        <div class="card">
+                            <img class="side back" src="cards/1.jpg" draggable="false">
+                            <div class="side front"></div>
+                        </div>
+                    </li>
+                    <li class="flipcard matched">
+                            <div class="card">
+                                <img class="side back" src="cards/2.jpg" draggable="false">
+                                <div class="side front"></div>
+                            </div>
+                        </li>
         </ul>
     </section>
 </body>
