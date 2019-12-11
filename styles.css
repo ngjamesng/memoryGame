@@ -14,8 +14,6 @@ li.flipcard {
 	height: 200px;
 	position: relative;
 	margin: 10px;
-	background: white;
-	/* border: 1px solid black; */
 }
 
 /* card styles */
@@ -68,7 +66,7 @@ li.flipcard div.card .back {
 }
 
 li.flipcard div.card .front {
-	background: black;
+	background: teal;
 }
 
 li.flipcard.matched div.card {
