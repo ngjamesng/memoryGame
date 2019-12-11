@@ -4,33 +4,77 @@ ul#cards {
 	flex-wrap: wrap;
 	justify-content: center;
 }
-li {
+li.flipcard {
+	-webkit-perspective: 200;
+	-ms-perspective: 200;
+	-moz-perspective: 200;
+	-o-perspective: 200;
 	list-style-type: none;
+	width: 200px;
+	height: 200px;
+	position: relative;
 	margin: 10px;
 	background: white;
-	border: 1px solid black;
+	/* border: 1px solid black; */
 }
 
 /* card styles */
-.card img {
-	width: 200px;
-	height: 200px;
-	object-fit: contain;
+
+li.flipcard.selected div.card {
+	transform: rotatey(180deg);
+	-ms-transform: rotatey(180deg);
+	-moz-transform: rotatey(180deg);
+	-webkit-transform: rotatey(180deg);
+	-o-transform: rotatey(180deg);
 }
 
-li.facedown {
-	background-color: black;
+.flipcard .card {
+	width: 100%;
+	height: 100%;
+	-webkit-transform-style: preserve-3d;
+	-webkit-transition: 0.5s;
+	-moz-transform-style: preserve-3d;
+	-moz-transition: 0.5s;
+	-ms-transform-style: preserve-3d;
+	-ms-transition: 0.5s;
+	-o-transform-style: preserve-3d;
+	-o-transition: 0.5s;
+	transform-style: preserve-3d;
+	transition: 0.5s;
 }
 
-li.facedown img {
-	opacity: 0;
+li.flipcard div.card .side {
+	width: 100%;
+	height: 100%;
+	padding: 10px;
+	cursor: pointer;
+	position: absolute;
+	box-sizing: border-box;
+	z-index: 2;
+	backface-visibility: hidden;
+	-webkit-backface-visibility: hidden;
+	-moz-backface-visibility: hidden;
+	-ms-backface-visibility: hidden;
+	-o-backface-visibility: hidden;
+	overflow: auto;
 }
 
-li.facedown.selected img {
-	background-color: yellow;
-	opacity: 1;
+li.flipcard div.card .back {
+	transform: rotatey(180deg);
+	-ms-transform: rotatey(180deg);
+	-moz-transform: rotatey(180deg);
+	-webkit-transform: rotatey(180deg);
+	-o-transform: rotatey(180deg);
 }
 
-li.matched {
-	background-color: green;
+li.flipcard div.card .front {
+	background: black;
+}
+
+li.flipcard.matched div.card {
+	transform: rotatey(180deg);
+	-ms-transform: rotatey(180deg);
+	-moz-transform: rotatey(180deg);
+	-webkit-transform: rotatey(180deg);
+	-o-transform: rotatey(180deg);
 }

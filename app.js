@@ -28,12 +28,19 @@ document.addEventListener("DOMContentLoaded", () => {
 		doubledCards.forEach((singleCard) => {
 			// create li (list item)
 			let imageItem = document.createElement("li");
-			imageItem.setAttribute("class", "card facedown");
+			imageItem.setAttribute("class", "flipcard facedown");
+			let div = document.createElement("div");
 			let img = document.createElement("img");
+			img.setAttribute("class", "side back");
 			img.setAttribute("src", `cards/${singleCard}.jpg`);
 			img.setAttribute("draggable", false); // prevent dragging/cheating
-			imageItem.appendChild(img);
+			div.appendChild(img);
+			let front = document.createElement("div");
+			front.setAttribute("class", "side front");
+			div.appendChild(front);
+			div.setAttribute("class", "card");
 			// finally, add the card to the list of cards
+			imageItem.appendChild(div);
 			cards.appendChild(imageItem);
 		});
 	}
@@ -42,7 +49,7 @@ document.addEventListener("DOMContentLoaded", () => {
 	function startGameLogic() {
 		gameStateActive = true;
 		startButton.textContent = "reset";
-		const cardNodeList = document.querySelectorAll(".card.facedown"); //nodelist, not an array
+		const cardNodeList = document.querySelectorAll(".flipcard.facedown"); //nodelist, not an array
 		let guessObj = {};
 		listenForFlipCards(cardNodeList, guessObj, gameStateActive);
 	}
@@ -107,6 +114,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 	function flipFaceUp(guessObj, idx, cardNodeList, card) {
 		guessObj[idx] = cardNodeList[idx];
+		console.log(card.childNodes[0].classList);
 		if (Object.keys(guessObj).length == 1) {
 			card.classList.add("selected");
 		}
