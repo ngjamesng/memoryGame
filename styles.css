@@ -16,6 +16,17 @@ li.flipcard {
 	margin: 10px;
 }
 
+@media (max-width: 600px) {
+	#cards {
+		padding: 5px;
+	}
+	li.flipcard {
+		width: 100px;
+		height: 100px;
+		margin: 2px;
+	}
+}
+
 /* card styles */
 
 li.flipcard.selected div.card {
@@ -45,7 +56,7 @@ li.flipcard div.card .side {
 	width: 100%;
 	height: 100%;
 	padding: 10px;
-	cursor: pointer;
+	cursor: help;
 	position: absolute;
 	box-sizing: border-box;
 	z-index: 2;
