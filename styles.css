@@ -57,7 +57,7 @@ li.flipcard div.card .side {
 	overflow: auto;
 }
 
-li.flipcard div.card .back {
+li.flipcard div.card img.back {
 	transform: rotatey(180deg);
 	-ms-transform: rotatey(180deg);
 	-moz-transform: rotatey(180deg);
