@@ -5,6 +5,7 @@ document.addEventListener("DOMContentLoaded", () => {
 	let score = 0;
 	let gameStateActive = false;
 
+	//if there's a best score in local storage, set display
 	localStorage.bestScore ? (bestScoreDisplay.textContent = localStorage.bestScore) : null;
 
 	// board/cards section
@@ -112,8 +113,7 @@ document.addEventListener("DOMContentLoaded", () => {
 	// matching logic
 	function checkSameOrMatchedOrAlreadyFlippedTwo(gameStateActive, card, guessObj) {
 		return (
-			(gameStateActive && Object.values(card.classList).includes("selected" || "matched")) ||
-			Object.keys(guessObj).length == 2
+			(gameStateActive && card.classList.contains("selected" || "matched")) || Object.keys(guessObj).length == 2
 		);
 	}
 
@@ -130,9 +130,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 	function flipFaceUp(guessObj, idx, cardNodeList, card) {
 		guessObj[idx] = cardNodeList[idx];
-		if (Object.keys(guessObj).length == 1) {
-			card.classList.add("selected");
-		}
+		Object.keys(guessObj).length == 1 ? card.classList.add("selected") : null;
 		incrementScoreBoard();
 	}
 
@@ -166,9 +164,8 @@ document.addEventListener("DOMContentLoaded", () => {
 	}
 
 	function twoDifferentCards(guessObj, idx, cardNodeList, card) {
-		if (Object.keys(guessObj).length == 1) {
-			guessObj[idx] = cardNodeList[idx];
-		}
+		Object.keys(guessObj).length == 1 ? (guessObj[idx] = cardNodeList[idx]) : null;
+
 		cardNodeList.forEach((node, nodeidx) => {
 			if (
 				Object.keys(guessObj).includes(nodeidx.toString()) &&
@@ -181,9 +178,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 		setTimeout(() => {
 			cardNodeList.forEach((node) => {
-				if (node.classList.contains("selected")) {
-					node.classList.remove("selected");
-				}
+				node.classList.contains("selected") ? node.classList.remove("selected") : null;
 			});
 			clearGuess(guessObj);
 		}, 1000);
@@ -198,7 +193,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
 	function checkWin(cardNodeList) {
 		gameStateActive &&
-		Array.prototype.slice.call(cardNodeList).every((card) => Object.values(card.classList).includes("matched"))
+		[
+			...cardNodeList
+		].every((card) => card.classList.contains("matched"))
 			? handleWin()
 			: null;
 	}
